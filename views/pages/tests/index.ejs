@@ -1,0 +1,19 @@
+<h1>Tests</h1>
+
+<h6><a href="/tests/new">Create Test</a></h6>
+
+<div class="row">
+    <% if (tests) { %>
+        <% for (let i = 0; i < tests.length; i++) { %>
+            <div class="col card">
+                <div class="card-body">
+                <h5 class="card-title"><%=tests[i].name%></h5>
+
+                <h6 class="card-subtitle mb-2 text-body-secondary"><%=tests[i].author%></h6>
+
+                <a href="/tests/<%=tests[i].name%>" class="card-link">Take Test</a>
+                </div>
+            </div>
+        <% } %>
+    <% } %>
+</div>

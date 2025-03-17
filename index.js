@@ -19,6 +19,7 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
         const accountsCollection = db.collection("Accounts");
 
         const questionsCollection = db.collection("Questions");
+        const testsCollection = db.collection("Tests");
 
         app.set('view engine', 'ejs');
         app.set('trust proxy', 1);
@@ -36,13 +37,48 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
         app.get("/", (req, res) => {
             createSessionData(req);
 
-            res.render("pages/home.ejs");
+            res.render("pages/home.ejs", { account: req.session.user });
+        });
+
+        app.get("/tests", (req, res) => {
+            createSessionData(req);
+
+            testsCollection.find().toArray()
+            .then(tests => {
+                res.render("pages/tests/index.ejs", { account: req.session.user, tests: tests });
+            })
+            .catch(error => console.error(error));
+        });
+
+        app.get("/tests/new", (req, res) => {
+            createSessionData(req);
+
+            res.render("pages/tests/create.ejs", { account: req.session.user });
+        });
+
+        app.get("/tests/:name", (req, res) => {
+            createSessionData(req);
+
+            questionsCollection.find({ testName: req.params.name }).toArray()
+            .then(questions => {
+                res.render("pages/tests/view.ejs", { account: req.session.user, questions: questions });
+            })
+            .catch(error => console.error(error));
+        });
+
+        app.post("/tests/create", (req, res) => {
+            testsCollection.insertOne({
+                name: req.body.name,
+                author: req.session.user.username
+            })
+            .then()
+            .catch(error => console.error(error));
         });
 
         app.get("/account", (req, res) => {
             createSessionData(req);
 
-            res.render("pages/accounts/account.ejs");
+            res.render("pages/accounts/account.ejs", { account: req.session.user });
         });
 
         app.post("/account", (req, res) => {
