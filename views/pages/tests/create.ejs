@@ -1,1 +1,32 @@
 <h1>Create Test</h1>
+
+<form class="p-3" action="/tests/create" method="POST">
+    <label class="form-label" for="name">Test Name</label>
+    <input type="text" id="name" name="name" class="form-control" required>
+
+    <h3>Questions</h3>
+
+    <% for (let i = 1; i <= 10; i++) { %>
+        <label class="form-label" for="questionName<%=i%>">Question <%=i%> Name</label>
+        <input type="text" id="questionName<%=i%>" name="questionName<%=i%>" class="form-control" required>
+
+        <label class="form-label" for="questionName<%=i%>_option_1">Option 1</label>
+        <input type="text" id="questionName<%=i%>_option_1" name="questionName<%=i%>_option_1" class="form-control" required>
+
+        <label class="form-label" for="questionName<%=i%>_option_2">Option 2</label>
+        <input type="text" id="questionName<%=i%>_option_2" name="questionName<%=i%>_option_2" class="form-control" required>
+
+        <label class="form-label" for="questionName<%=i%>_option_4">Option 3</label>
+        <input type="text" id="questionName<%=i%>_option_3" name="questionName<%=i%>_option_3" class="form-control" required>
+
+        <label class="form-label" for="questionName<%=i%>_option_4">Option 4</label>
+        <input type="text" id="questionName<%=i%>_option_4" name="questionName<%=i%>_option_4" class="form-control" required>
+
+        <label class="form-label" for="correctAnswer_<%=i%>">Answer</label>
+        <input type="number" id="correctAnswer_<%=i%>" name="correctAnswer_<%=i%>" class="form-control" min="1" max="4" required>
+
+        <hr>
+    <% } %>
+
+    <button type="submit" class="btn btn-primary">Create Test</button>
+</form>

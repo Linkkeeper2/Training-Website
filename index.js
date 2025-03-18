@@ -71,7 +71,25 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
                 name: req.body.name,
                 author: req.session.user.username
             })
-            .then()
+            .then(() => {
+                for (let i = 1; i <= 10; i++) {
+                    let options = [];
+
+                    for (let k = 1; k <= 4; k++)
+                        options.push(req.body[`questionName${i}_option_${k}`]);
+
+                    questionsCollection.insertOne({
+                        testName: req.body.name,
+                        name: req.body[`questionName${i}`],
+                        answer: parseInt(req.body[`correctAnswer_${i}`]),
+                        options: options
+                    })
+                    .then()
+                    .catch(error => confirm.error(error));
+                }
+
+                res.redirect("/tests");
+            })
             .catch(error => console.error(error));
         });
 
