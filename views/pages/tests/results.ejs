@@ -1,0 +1,42 @@
+<h1>Results for <%=results.results.testName%></h1>
+
+<h3>Score: <%=results.score%></h3>
+
+<% for (let i = 0; i < results.questions.length; i++) { %>
+    <div class="mb-3">
+        <% if (results.results.answers[`${results.questions[i].name}`] === results.questions[i].answer) { %>
+            <h3 class="text-success">
+                Question <%=i + 1%>: <%=results.questions[i].name%>
+            </h3>  
+        <% } else { %>
+            <h3 class="text-danger">
+                Question <%=i + 1%>: <%=results.questions[i].name%>
+            </h3>
+        <% } %>
+        
+
+        <% for (let k = 0; k < results.questions[i].options.length; k++) { %>
+            <% if (results.results.answers[`${results.questions[i].name}`] === k + 1 + "") { %>
+                <input class="form-check-input" type="radio" name="<%=results.questions[i].name%>" value="<%=k+1%>" required checked>
+                <label class="form-check-label" for="<%=results.questions[i].name%>_<%=k%>"><%=results.questions[i].options[k]%></label>
+
+                <% if (results.results.answers[`${results.questions[i].name}`] === results.questions[i].answer) { %>
+                    <b class="text-primary">Correct Answer</b>
+                <% } else { %>
+                    <b class="text-primary">Your Answer</b>
+                <% } %>
+                
+                <br>
+            <% } else { %>
+                <input class="form-check-input" type="radio" name="<%=results.questions[i].name%>" value="<%=k+1%>" required>
+                <label class="form-check-label" for="<%=results.questions[i].name%>_<%=k%>"><%=results.questions[i].options[k]%></label>
+
+                <% if (k + 1 + "" === results.questions[i].answer) { %>
+                    <b class="text-primary">Correct Answer</b>
+                <% } %>
+
+                <br>
+            <% } %>
+        <% } %>
+    </div>
+<% } %>

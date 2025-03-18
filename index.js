@@ -21,6 +21,8 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
         const questionsCollection = db.collection("Questions");
         const testsCollection = db.collection("Tests");
 
+        const resultsCollection = db.collection("Results");
+
         app.set('view engine', 'ejs');
         app.set('trust proxy', 1);
 
@@ -66,6 +68,35 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
             .catch(error => console.error(error));
         });
 
+        app.get("/tests/:name/results", (req, res) => {
+            createSessionData(req);
+
+            resultsCollection.findOne({ taker: req.session.user.username, testName: req.params.name })
+            .then(r => {
+                questionsCollection.find({ testName: req.params.name }).toArray()
+                .then(questions => {
+                    let answers = r.answers;
+
+                    let result = {
+                        score: 0,
+                        results: r,
+                        questions: questions
+                    };
+
+                    for (let i = 0; i < questions.length; i++) {
+                        let answer = answers[questions[i].name];
+
+                        if (answer === questions[i].answer) result.score++;
+                    }
+
+                    res.render("pages/tests/results.ejs", { account: req.session.user, results: result });
+                })
+                .catch(error => console.error(error));
+                
+            })
+            .catch(error => console.error(error));
+        });
+
         app.post("/tests/create", (req, res) => {
             testsCollection.insertOne({
                 name: req.body.name,
@@ -81,7 +112,7 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
                     questionsCollection.insertOne({
                         testName: req.body.name,
                         name: req.body[`questionName${i}`],
-                        answer: parseInt(req.body[`correctAnswer_${i}`]),
+                        answer: req.body[`correctAnswer_${i}`],
                         options: options
                     })
                     .then()
@@ -89,6 +120,18 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
                 }
 
                 res.redirect("/tests");
+            })
+            .catch(error => console.error(error));
+        });
+
+        app.post("/tests/:name/submit", (req, res) => {
+            resultsCollection.insertOne({
+                taker: req.session.user.username,
+                testName: req.params.name,
+                answers: req.body
+            })
+            .then(() => {
+                res.redirect(`/tests/${req.params.name}/results`);
             })
             .catch(error => console.error(error));
         });
