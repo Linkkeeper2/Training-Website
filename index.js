@@ -61,7 +61,7 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
 
             questionsCollection.find({ testName: req.params.name }).toArray()
             .then(questions => {
-                res.render("pages/tests/view.ejs", { account: req.session.user, questions: questions });
+                res.render("pages/tests/view.ejs", { account: req.session.user, questions: questions, testName: req.params.name });
             })
             .catch(error => console.error(error));
         });
