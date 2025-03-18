@@ -42,6 +42,20 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
             res.render("pages/home.ejs", { account: req.session.user });
         });
 
+        app.get("/course", (req, res) => {
+            createSessionData(req);
+
+            testsCollection.find().toArray()
+            .then(tests => {
+                resultsCollection.find().toArray()
+                .then(results => {
+                    res.render("pages/admin/course.ejs", { account: req.session.user, tests: tests, results: results });
+                })
+                .catch(error => console.error(error));
+            })
+            .catch(error => console.error(error));
+        });
+
         app.get("/tests", (req, res) => {
             createSessionData(req);
 
@@ -71,7 +85,12 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
         app.get("/tests/:name/results", (req, res) => {
             createSessionData(req);
 
-            resultsCollection.findOne({ taker: req.session.user.username, testName: req.params.name })
+            var taker = req.session.user.username;
+
+            if (req.query.taker)
+                taker = req.query.taker;
+
+            resultsCollection.findOne({ taker: taker, testName: req.params.name })
             .then(r => {
                 questionsCollection.find({ testName: req.params.name }).toArray()
                 .then(questions => {
@@ -91,10 +110,15 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
 
                     res.render("pages/tests/results.ejs", { account: req.session.user, results: result });
                 })
-                .catch(error => console.error(error));
-                
+                .catch(error => {
+                    console.error(error)
+                    res.redirect("/tests");
+                });
             })
-            .catch(error => console.error(error));
+            .catch(error => {
+                console.error(error)
+                res.redirect("/tests");
+            });
         });
 
         app.post("/tests/create", (req, res) => {
