@@ -40,3 +40,7 @@
         <% } %>
     </div>
 <% } %>
+
+<% if (results.score >= 8) { %>
+    <b class="text-primary">Cool Certificate</b> for <%=results.results.testName%>
+<% } %>

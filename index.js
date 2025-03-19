@@ -56,6 +56,16 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
             .catch(error => console.error(error));
         });
 
+        app.get("/tests/:name/admin", (req, res) => {
+            createSessionData(req);
+
+            questionsCollection.find({ testName: req.params.name }).toArray()
+            .then(questions => {
+                res.render("pages/admin/test.ejs", { account: req.session.user, questions: questions, testName: req.params.name });
+            })
+            .catch(error => console.error(error));
+        });
+
         app.get("/tests", (req, res) => {
             createSessionData(req);
 
@@ -149,11 +159,20 @@ MongoClient.connect(uriString, { autoSelectFamily: false })
         });
 
         app.post("/tests/:name/submit", (req, res) => {
-            resultsCollection.insertOne({
-                taker: req.session.user.username,
-                testName: req.params.name,
-                answers: req.body
-            })
+            resultsCollection.findOneAndUpdate(
+                {
+                    taker: req.session.user.username,
+                    testName: req.params.name
+                },
+
+                {
+                    $set: {
+                        taker: req.session.user.username,
+                        testName: req.params.name,
+                        answers: req.body
+                    }
+                }
+            )
             .then(() => {
                 res.redirect(`/tests/${req.params.name}/results`);
             })

@@ -3,3 +3,14 @@
 <%- include('../tests/index.ejs') %>
 
 <%- include('../tests/results_all.ejs') %>
+
+<script>
+    const allTakeTests = document.querySelectorAll(".take-test");
+
+    if (allTakeTests) {
+        allTakeTests.forEach(link => {
+            link.href += "/admin";
+            link.textContent = "View Test";
+        });
+    }
+</script>
